@@ -7,3 +7,5 @@ Borderless tables and multi-column pdfs are not supported currently.
 
 For usage, see SinglePageTest and SingleTest in the test folder.    
 具体使用方式见test文件夹下的SinglePageTest和SingleTest  
+
+This is a project written for my master's thesis
