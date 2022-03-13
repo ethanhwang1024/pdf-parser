@@ -29,11 +29,11 @@ public class SingleTest {
         System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
     }
 
-    private static String inputFilePath = "F:\\notebook\\年报\\海尔智家：海尔智家股份有限公司2020年年度报告.pdf";
+    private static String inputFilePath = "E:\\年报\\海尔智家：海尔智家股份有限公司2020年年度报告.pdf";
 
-    private static String outputFilePathDir = "F:\\notebook\\年报\\output";
+    private static String outputFilePathDir = "E:\\年报\\output";
 
-
+    private static String picSavePath = "E:\\pic";
     @Test
     public void parsingUnTaggedPdfWithTableDetectionAndPicture() throws IOException {
         long start = System.currentTimeMillis();
@@ -45,7 +45,7 @@ public class SingleTest {
     }
 
     private static String parsingUnTaggedPdfWithTableDetectionAndPicture(PDDocument pdd,String fileName,String outputFileDir) throws IOException {
-        ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,"D:/pic");
+        ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,picSavePath);
 
         FileTool.saveHTML(outputFileDir,contentPojo,fileName);
 //
