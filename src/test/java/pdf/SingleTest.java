@@ -35,16 +35,16 @@ public class SingleTest {
 
 
     @Test
-    public void parsingUnTaggedPdfWithTableDetection() throws IOException {
+    public void parsingUnTaggedPdfWithTableDetectionAndPicture() throws IOException {
         long start = System.currentTimeMillis();
         PDDocument pdd = PDDocument.load(new File(inputFilePath));
 
-        String s = parsingUnTaggedPdfWithTableDetection(pdd, inputFilePath, outputFilePathDir);
+        String s = parsingUnTaggedPdfWithTableDetectionAndPicture(pdd, inputFilePath, outputFilePathDir);
         long end = System.currentTimeMillis();
         System.out.println(end-start);
     }
 
-    private static String parsingUnTaggedPdfWithTableDetection(PDDocument pdd,String fileName,String outputFileDir) throws IOException {
+    private static String parsingUnTaggedPdfWithTableDetectionAndPicture(PDDocument pdd,String fileName,String outputFileDir) throws IOException {
         ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,"D:/pic");
 
         FileTool.saveHTML(outputFileDir,contentPojo,fileName);
