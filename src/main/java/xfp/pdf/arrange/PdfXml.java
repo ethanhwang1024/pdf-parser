@@ -16,20 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @ClassName PdfXml
- * @Description 基于标记信息构建文档DOM树，并使用广度优先搜索从中抽取所需层级内容
- * @Author WANGHAN756
- * @Date 2021/7/9 13:36
- * @Version 1.0
- **/
+
 public class PdfXml {
-    /**
-     * 针对不同类型的形成不同的内容
-     * @param contentPojo contentPojo
-     * @param indexStr digital:digital的字符串，左闭右闭
-     * @return 内容
-     */
+
     private static String formContent(ContentPojo contentPojo,String indexStr){
         Integer startIndex = Integer.parseInt(indexStr.split(":")[0]);
         Integer endIndex = Integer.parseInt(indexStr.split(":")[1]);
@@ -487,8 +476,6 @@ public class PdfXml {
                     }
                 }else{
                     //如果不在一页
-//                    String format = String.format("%s,%s,%s,%s", pre.getYStart(), pre.getPageHeight(), cur.getYStart(), cur.getHeight());
-//                    System.out.println(format);
                     float v = pre.getYStart() + pre.getPageHeight() - cur.getYStart() - cur.getHeight();
                     if(v>60f){
                         //认为达到了不可接受的距离，如果cur不是表格或者图片的话就认为是尾部文本

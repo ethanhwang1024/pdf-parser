@@ -11,13 +11,6 @@ import xfp.pdf.tools.TextTool;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @ClassName ParaStrategy
- * @Description 存放对段落进行判断的一些方法
- * @Author WANGHAN756
- * @Date 2021/6/25 9:33
- * @Version 1.0
- **/
 public class ParaStrategy {
 
 

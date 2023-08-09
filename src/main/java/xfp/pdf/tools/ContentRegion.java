@@ -8,13 +8,7 @@ import org.apache.pdfbox.util.Matrix;
 
 import java.util.List;
 
-/**
- * @ClassName ContentRegion
- * @Description 文本内容块
- * @Author WANGHAN756
- * @Date 2021/6/16 13:42
- * @Version 1.0
- **/
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

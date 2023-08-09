@@ -10,13 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @ClassName FileTool
- * @Description 存储文件
- * @Author WANGHAN756
- * @Date 2021/7/2 11:00
- * @Version 1.0
- **/
+
 public class FileTool {
     public static String saveText(String outputFileDir, ContentPojo contentPojo, String fileName){
         if(outputFileDir==null){
@@ -127,10 +121,14 @@ public class FileTool {
         for(int i=0;i<outList.size();i++){
             ContentPojo.contentElement p = outList.get(i);
             String element_type = p.getElementType();
-            if("text".equals(element_type)||"title".equals(element_type)){
+            if("text".equals(element_type)){
                 //文本
                 sb.append("<p>");
                 sb.append(p.getText().replaceAll("\n","")).append("</p>");
+                sb.append("<br/>");
+            }else if("title".equals(element_type)){
+                sb.append("<h>");
+                sb.append(p.getText().replaceAll("\n","")).append("</h>");
                 sb.append("<br/>");
             }else if(element_type.equals("table")){
                 sb.append("<table border=\"1\">");

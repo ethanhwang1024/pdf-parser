@@ -25,13 +25,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- *@ClassName CellAnalyser
- *@Description 表格分析与提取类
- *@Author WANGHAN756
- *@Date 2021/6/3 15:41
- *@Version 1.0
-**/
+
 public class CellAnalyser {
     @Data
     @ToString
@@ -115,8 +109,6 @@ public class CellAnalyser {
         BufferedImage image = renderer.renderImage(pageNum-1);
         CustomPageDrawer drawer = renderer.getDrawer();
 
-//        ImageIO.write(image, "PNG", new File("custom-render.png"));
-
         List<Shape> tableLines = drawer.getTableLines();
         return tableLines;
     }
@@ -158,14 +150,7 @@ public class CellAnalyser {
         return curFirst;
     }
 
-    /**
-     * 传入y的上下界，返回对应的table范围，当taggedPdf通过标签拿到表格元素（table也可能是figure）
-     * 的上下界时就可以通过这个方法获得符合条件的tableInfo
-     * @param resultList
-     * @param heightStart
-     * @param heightEnd
-     * @return
-     */
+
     public static TableInfo getSpecifyTableInfo(List<Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>> resultList, Double heightStart, Double heightEnd){
         List<Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>> list = resultList.stream().filter(x -> {
             Tu.Tuple2<Double, Double> key = x.getKey();
@@ -180,11 +165,7 @@ public class CellAnalyser {
         }
     }
 
-    /**
-     * 获得给定tableLines包裹的所有表格信息，tableLines可通过调用getShapes获得
-     * @param tableLines
-     * @return
-     */
+
     public static List<Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>> getTableInfos(List<Shape> tableLines) {
         /**---------------------分离出并合并相连的竖线------------------------------------------ */
         List<TableLine.VerticalLine> verticalLines = tableLines.stream().filter(x -> {
@@ -237,9 +218,7 @@ public class CellAnalyser {
                 newVerticalLines.add(vL);
             }
         }
-//        for(TableLine.VerticalLine vl:newVerticalLines){
-//            System.out.println(vl);
-//        }
+
         /**---------------------分离出并合并相连的横线------------------------------------------ */
         List<TableLine.HorizonLine> horizonLines = tableLines.stream().filter(x -> {
             double height = x.getBounds2D().getHeight();
@@ -292,12 +271,7 @@ public class CellAnalyser {
                 newHorizonLines.add(hl);
             }
         }
-        /**
-         * 有一种特殊的额外情况这里进行考虑
-         * |___|____|____|____|
-         * 当表格跨页时，下一页的表格有可能上方缺少一根横线，导致无法识别出表格。
-         * 这里对这根横线进行补充
-         */
+
         if(newHorizonLines.size()!=0){
             TableLine.HorizonLine firstLine = newHorizonLines.get(0);
             double y = firstLine.getY();
@@ -315,13 +289,10 @@ public class CellAnalyser {
         }
 
 
-        //适当拉长，保证有交点
         stretchVerticalLine(newVerticalLines);
         stretchHorizonLine(newHorizonLines);
         /**---------------------表格区域判断----------------------------------------------- */
-        //拆分多个表格区域，目前表格区域拆分适用于同一行不存在两个表格的情况，如果存在分栏导致的同一行可能
-        //存在多个表格的情况，需要对这一部分的代码进行修改以添加支持
-        //拆分算法通过拿出每一个竖线的上下界融合进行判断
+
         List<Tu.Tuple2<Double,Double>> rangeList = new ArrayList<>();
         for (TableLine.VerticalLine verticalLine : newVerticalLines) {
             double yStart = verticalLine.getYStart();
@@ -364,18 +335,14 @@ public class CellAnalyser {
                 double y1 = y.getY();
                 return yStart <= y1 && yEnd >= y1;
             }).collect(Collectors.toList());
-//            System.out.println("========h===========");
-//            System.out.println(horizonLines1);
-//            System.out.println("========h===========");
+
             List<TableLine.VerticalLine> verticalLines1 = newVerticalLines.stream().filter(y -> {
                 double yStart1 = y.getYStart();
                 double yEnd1 = y.getYEnd();
                 return yStart <= yStart1 && yEnd >= yEnd1;
             }).collect(Collectors.toList());
             TableInfo tableInfo = getTableInfo(horizonLines1, verticalLines1);
-//            System.out.println("========v===========");
-//            System.out.println(verticalLines1);
-//            System.out.println("========v===========");
+
             return new Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>(x, tableInfo);
         }).collect(Collectors.toList());
         return result;
@@ -406,15 +373,12 @@ public class CellAnalyser {
             innerCell.setRow_span(rowSpan);
             innerCell.setCol_span(colSpan);
 
-//            innerCell.setXStart(xStart);
-//            innerCell.setYStart(yStart);
-//            innerCell.setWidth(width);
-//            innerCell.setHeight(height);
+
             return innerCell;
         }).collect(Collectors.toList());
 
         List<Tu.Tuple2<String, Rectangle2D>> cellTexts = TextTool.grabText(pdd, cellRanges, pageNum);
-//        List<String> cellTexts = TextTool.grabText(pdd, cellRanges, pageNum);
+
         for(int i=0;i<innerCells.size();i++){
             Tu.Tuple2<String, Rectangle2D> tmp = cellTexts.get(i);
             innerCells.get(i).setText(tmp.getKey());
@@ -485,14 +449,6 @@ public class CellAnalyser {
 
     private static TableInfo getTableInfo(List<TableLine.HorizonLine> horizonLines,
                                           List<TableLine.VerticalLine> verticalLines){
-        //注意horizonLines中很可能包含有文字的下划线，这里需要进行过滤，表格中的结构线必然会和至少两根竖线连接，
-        //如果不到两根，就将横线删除
-        /*
-        |        |
-        |————————|
-        |——      | <-
-        |   ——   | <-
-         */
         List<TableLine.HorizonLine> needRemoveLine = new ArrayList<>();
         for(TableLine.HorizonLine horizonLine:horizonLines){
             double xStart = horizonLine.getXStart();
@@ -538,15 +494,7 @@ public class CellAnalyser {
                 return Double.compare(o2.getKey(),o1.getKey());
             }
         }).collect(Collectors.toList());
-        /*
-        补全边框线，对于一些隐藏边框表格，可能出现最外围横线和竖线不完整的情况，这里进行填充
-          |        |
-        ——|————————|——
-          |————————|
-        ——|————————|——
-          |        |
-        最终要使得边框线出头
-         */
+
         if(!CollectionUtils.isEmpty(horizonList)){
             //第一条横线和最后一条横线，人为使其扩展至页面最大值
             Map.Entry<Double, List<TableLine.HorizonLine>> fistLineListMap = horizonList.get(0);
@@ -659,17 +607,7 @@ public class CellAnalyser {
                     }
                 }
                 if(preFind&&posFind){
-                    /**
-                     * 还有一种情况还需要考虑
-                     *  __________
-                     * |    |    |  中间这根竖线需要放入set
-                     * ——————————
-                     * |        |
-                     * ——————————
-                     * |________|
-                     * 此时考虑最下方的单元格，其应该是跨了列的，但是只考虑上下方穿过的条件，并不会识别其为合并单元格
-                     * 所以拿到左右边框后还需遍历一次竖线
-                     */
+
                     double leftX = verticalLines.get(pre).getX();
                     double rightX = verticalLines.get(pos).getX();
                     for (TableLine.VerticalLine tmp : verticalLines) {

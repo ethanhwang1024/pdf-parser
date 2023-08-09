@@ -4,13 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @ClassName Tu
- * @Description 工具pojo类，类似元组
- * @Author WANGHAN756
- * @Date 2021/6/8 13:49
- * @Version 1.0
- **/
+
 public class Tu {
     @Data
     @AllArgsConstructor

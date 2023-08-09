@@ -10,13 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-/**
- * @ClassName SettingReader
- * @Description 用来读取默认配置文件。
- * @Author WANGHAN756
- * @Date 2021/7/13 10:21
- * @Version 1.0
- **/
+
 public class SettingReader {
 
 
@@ -116,7 +110,7 @@ public class SettingReader {
     public static MarkPojo getPdfMark() {
         if(pdfMark==null){
             //读取resource下配置文件
-            InputStream inputStream= SettingReader.class.getClassLoader().getResourceAsStream("mark_default/pdf_mark.json");
+            InputStream inputStream= SettingReader.class.getClassLoader().getResourceAsStream("mark_default/original/pdf_mark.json");
             String result = new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining(System.lineSeparator()));
             Gson gson = new Gson();
@@ -209,9 +203,5 @@ public class SettingReader {
 //        }
 //    }
 
-
-    public static void main(String[] args) {
-
-    }
 
 }

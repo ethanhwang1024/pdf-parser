@@ -151,23 +151,8 @@ public class UnTaggedAnalyser {
         List<LineStatus> tmpLineStatuses = new ArrayList<>();
 
 
-        /**
-         * 构建机器学习的数据集
-         */
-//        Map<String, Integer> tmpMap1 = new HashMap<>();
-//        Map<Float, Integer> tmpMap2 = new HashMap<>();
-//        Map<String, Integer> tmpMap3 = new HashMap<>();
-
         int count = 0;
         for(LineStatus[] features:lineStatuses){
-            /**
-             * 构建机器学习的数据集开始
-             */
-            //每个文本块之间插入一个空行
-//            untaggedContext.getSb().append("\n");
-            /**
-             * 构建机器学习的数据集开始
-             */
 
             TextBlock textBlock = textBlocks.get(count);
             count++;
@@ -183,85 +168,6 @@ public class UnTaggedAnalyser {
             for(int i=0;i<features.length;i++){
                 //从这里可以获得机器学习数据集
                 LineStatus lineStatus = features[i];
-
-                /**
-                 * 构建机器学习的数据集开始
-                 */
-//                LineFeatures lineFeatures = new LineFeatures();
-//                Float docLeftX = untaggedContext.getLeftX();
-//                lineFeatures.setDocLeftX(docLeftX);
-//                Float docRightX = untaggedContext.getRightX();
-//                lineFeatures.setDocRightX(docRightX);
-//                List<Tu.Tuple2<TextPosition, RenderInfo>> tmpLine = region.get(i);
-//                if(!CollectionUtils.isEmpty(tmpLine)){
-//                    String lineStr = UnTaggedAnalyser.formLineString(tmpLine);
-//                    lineFeatures.setLine(lineStr.replaceAll("\n",""));
-//                    float leftX = tmpLine.get(0).getKey().getX();
-//                    lineFeatures.setLeftX(leftX);
-//                    float rightX = tmpLine.get(tmpLine.size() - 1).getKey().getX();
-//                    lineFeatures.setRightX(rightX);
-//                    Tu.Tuple2<String, String> mostCommonFont = findMostCommonFont(tmpLine, tmpMap1);
-//                    lineFeatures.setFont1(mostCommonFont.getKey());
-//                    lineFeatures.setFont2(mostCommonFont.getValue());
-//                    Tu.Tuple2<Float, Float> mostCommonFontSize = findMostCommonFontSize(tmpLine, tmpMap2);
-//                    if(mostCommonFontSize!=null){
-//                        lineFeatures.setFontSize1(mostCommonFontSize.getKey());
-//                        lineFeatures.setFontSize2(mostCommonFontSize.getValue());
-//                    }else{
-//                        lineFeatures.setFontSize1(0f);
-//                        lineFeatures.setFontSize2(0f);
-//                    }
-//                    Tu.Tuple2<String, String> mostCommonRenderingMode = findMostCommonRenderingMode(tmpLine, tmpMap3);
-//                    if(mostCommonRenderingMode!=null){
-//                        lineFeatures.setRenderingMode1(mostCommonRenderingMode.getKey());
-//                        lineFeatures.setRenderingMode2(mostCommonRenderingMode.getValue());
-//                    }else{
-//                        lineFeatures.setRenderingMode1("");
-//                        lineFeatures.setRenderingMode2("");
-//                    }
-//
-//                    float deltaLength = calAvgDeltaLength(tmpLine);
-//                    lineFeatures.setDeltaLength(deltaLength);
-//                    String unicode = tmpLine.get(0).getKey().getUnicode();
-//                    if(!isContainChinese(unicode)&&!isContainEnglish(unicode)){
-//                        //包含其他内容开头
-//                        lineFeatures.setIsSpecialTokenStart(true);
-//                    }else{
-//                        lineFeatures.setIsSpecialTokenStart(false);
-//                    }
-//                    String lastToken = tmpLine.get(tmpLine.size() - 1).getKey().getUnicode();
-//                    if(lastToken.matches("[.;。；]")){
-//                        lineFeatures.setIsSpecialTokenEnd(true);
-//                    }else{
-//                        lineFeatures.setIsSpecialTokenEnd(false);
-//                    }
-//                    if(i==0){
-//                        lineFeatures.setMarginTop(100f);
-//                        if(features.length==1){
-//                            lineFeatures.setMarginDown(0f);
-//                        }else{
-//                            List<Tu.Tuple2<TextPosition, RenderInfo>> nextLine = region.get(1);
-//                            float postSpace = nextLine.get(0).getKey().getY() - tmpLine.get(0).getKey().getY() - nextLine.get(0).getKey().getHeight();
-//                            lineFeatures.setMarginDown(postSpace);
-//                        }
-//                    }else{
-//                        List<Tu.Tuple2<TextPosition, RenderInfo>> preLine = region.get(i - 1);
-//                        float preSpace = tmpLine.get(0).getKey().getY() - preLine.get(0).getKey().getY() - tmpLine.get(0).getKey().getHeight();
-//                        lineFeatures.setMarginTop(preSpace);
-//                        if(i==features.length-1){
-//                            lineFeatures.setMarginDown(100f);
-//                        }else{
-//                            List<Tu.Tuple2<TextPosition, RenderInfo>> nextLine = region.get(i+1);
-//                            float postSpace = nextLine.get(0).getKey().getY() - tmpLine.get(0).getKey().getY() - nextLine.get(0).getKey().getHeight();
-//                            lineFeatures.setMarginDown(postSpace);
-//                        }
-//                    }
-//                }
-//                lineFeatures.setLineStatus(lineStatus);
-//                untaggedContext.getSb().append(lineFeatures.toString()).append("\n");
-                /**
-                 * 构建机器学习的数据集结束
-                 */
 
 
                 switch (lineStatus){
@@ -942,6 +848,9 @@ public class UnTaggedAnalyser {
             //结尾不是。.
             for(Tu.Tuple2<TextPosition, RenderInfo> tu:line){
                 String unicode = tu.getKey().getUnicode();
+                if(unicode==null||unicode.length()==0){
+                    return false;
+                }
                 if(Character.isDigit(unicode.charAt(0))){
                     return true;
                 }

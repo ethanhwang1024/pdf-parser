@@ -9,13 +9,7 @@ import xfp.pdf.tools.RenderInfo;
 
 import java.util.List;
 
-/**
- * @ClassName TextBlock
- * @Description 文本块
- * @Author WANGHAN756
- * @Date 2021/6/21 15:36
- * @Version 1.0
- **/
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

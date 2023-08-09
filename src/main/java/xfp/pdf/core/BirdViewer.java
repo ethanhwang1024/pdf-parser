@@ -18,14 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @ClassName BirdViewer
- * @Description 总览所有页面，对跨页表格和跨页段落进行合并
- *              注意，taggedPdf由于有标签的存在，不需要合并跨页段落
- * @Author WANGHAN756
- * @Date 2021/6/23 13:52
- * @Version 1.0
- **/
+
 public class BirdViewer {
     //跨多页表格合并
     // [] pre
@@ -143,6 +136,9 @@ public class BirdViewer {
                 tableInfo = CellAnalyser.getLastTableInfo(CellAnalyser.getTableInfos(shapes));
             }else {
                 tableInfo = CellAnalyser.getFirstTableInfo(CellAnalyser.getTableInfos(shapes));
+            }
+            if(tableInfo==null){
+                continue;
             }
             Double startPoint = tableInfo.getValue().getYStart();
             Double yStart = tableInfo.getKey().getKey();
@@ -318,24 +314,6 @@ public class BirdViewer {
                             nextPage.remove(0);
                         }
                     }
-
-
-
-//                    //起始位置lastE小于等于firstE，结束位置lastE大于等于firstE,那么认为是一段话
-//                    float deltaLength = Math.min(UnTaggedAnalyser.calAvgDeltaLength(endLine), UnTaggedAnalyser.calAvgDeltaLength(startLine));
-//                    float endLineStartX = endLine.get(0).getKey().getX();
-//                    float startLineStartX = startLine.get(0).getKey().getX();
-//                    boolean flag1 = UnTaggedAnalyser.comparePos(endLineStartX, startLineStartX, deltaLength);
-//
-//                    float endLineEndX = endLine.get(endLine.size() - 1).getKey().getX() + endLine.get(endLine.size() - 1).getKey().getWidth();
-//                    float startLineEndX = startLine.get(startLine.size() - 1).getKey().getX() + startLine.get(startLine.size() - 1).getKey().getWidth();
-//                    boolean flag2 = UnTaggedAnalyser.comparePos(startLineEndX, endLineEndX, deltaLength);
-//
-//                    if(flag1&&flag2){
-//                        ContentPojo.Text e = mergePElement(lastE, firstE);
-//                        curPage.set(curPage.size()-1,e);
-//                        nextPage.remove(0);
-//                    }
 
             }
         }

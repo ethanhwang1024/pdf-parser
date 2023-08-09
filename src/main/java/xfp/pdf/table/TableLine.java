@@ -4,13 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * @ClassName TableLine
- * @Description 表格线实体类，用于表示表格线与合并表格线
- * @Author WANGHAN756
- * @Date 2021/6/2 15:37
- * @Version 1.0
- **/
+
 public class TableLine {
 
     @Data

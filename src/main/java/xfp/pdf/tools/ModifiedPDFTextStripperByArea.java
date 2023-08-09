@@ -18,13 +18,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 
-/**
- * @ClassName Test
- * @Description TODO
- * @Author WANGHAN756
- * @Date 2021/6/16 9:30
- * @Version 1.0
- **/
+
 public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
 
     public final List<String> regions = new ArrayList<>();
@@ -35,7 +29,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
 
     private List<List<Tu.Tuple2<TextPosition, RenderInfo>>> textPositionsList = null;
     public final Map<TextPosition,RenderInfo> positionRenderInfoMap = new HashMap<>();
-//    public final Map<String,List<List<TextPosition>>> contentRegions = new HashMap<>();
+
 
     public final Map<String,List<List<Tu.Tuple2<TextPosition,RenderInfo>>>> contentRegions = new HashMap<>();
 
@@ -167,15 +161,13 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             startOfArticle = true;
             List<LineItem> line = new ArrayList<>();
 
-//            List<List<TextPosition>> textPositionsList = new ArrayList<>();
             List<Tu.Tuple2<TextPosition,RenderInfo>> positions = new ArrayList<>();
 
             Iterator<TextPosition> textIter = textList.iterator();
             float previousAveCharWidth = -1;
 
-            //对每一个char进行遍历
+
             while (textIter.hasNext()){
-//                System.out.println("哈哈哈");
 
                 TextPosition position = textIter.next();
                 PositionWrapper current = new PositionWrapper(position);
@@ -263,11 +255,11 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
                                     .endsWith(wordSeparator))))
                     {
                         line.add(LineItem.getWordSeparator());
-                        //Wanghan
+
                         positions.add(new Tu.Tuple2<>(ContentRegion.createTextPositionForWordSep(),null));
                     }
 
-                    //如果最后一个字符和当前字符之间至少有一个空格，则在字体大小可能完全更改时重置最大行高
+
                     if (Math.abs(position.getX()
                             - lastPosition.getTextPosition().getX()) > (wordSpacing + deltaSpace))
                     {
@@ -279,13 +271,13 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
                 if(positionY>=maxYForLine){
                     maxYForLine = positionY;
                 }
-                //endX是PDF认为的文本结束位置的x坐标。我们使用它来计算下面的指标。
+
                 endOfLastTextX = positionX + positionWidth;
                 if (characterValue != null)
                 {
                     if (startOfPage && lastPosition == null)
                     {
-                        writeParagraphStart();// not sure this is correct for RTL?
+                        writeParagraphStart();
                     }
 
                     line.add(new LineItem(position));
@@ -305,11 +297,11 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
                 lastWordSpacing = wordSpacing;
                 previousAveCharWidth = averageCharWidth;
             }
-            // print the final line
+
             if (line.size() > 0)
             {
                 writeLine(normalize(line));
-                //最后一行
+
                 textPositionsList.add(positions);
                 writeParagraphEnd();
             }
@@ -376,7 +368,6 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             }
             else if (xGap > newXVal)
             {
-                // text is indented, but try to screen for hanging indent
                 if (!lastLineStartPosition.isParagraphStart())
                 {
                     result = true;
@@ -388,7 +379,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             }
             else if (xGap < -position.getTextPosition().getWidthOfSpace())
             {
-                // text is left of previous line. Was it a hanging indent?
+
                 if (!lastLineStartPosition.isParagraphStart())
                 {
                     result = true;
@@ -396,16 +387,14 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             }
             else if (Math.abs(xGap) < positionWidth)
             {
-                // current horizontal position is within 1/4 a char of the last
-                // linestart. We'll treat them as lined up.
+
                 if (lastLineStartPosition.isHangingIndent())
                 {
                     position.setHangingIndent();
                 }
                 else if (lastLineStartPosition.isParagraphStart())
                 {
-                    // check to see if the previous line looks like
-                    // any of a number of standard list item formats
+
                     Pattern liPattern = matchListItemPattern(lastLineStartPosition);
                     if (liPattern != null)
                     {
@@ -420,11 +409,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
         }
         if (result)
         {
-//            try {
-//                output.write("P");
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
             position.setParagraphStart();
         }
     }
@@ -438,8 +423,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
 
     private float multiplyFloat(float value1, float value2)
     {
-        // multiply 2 floats and truncate the resulting value to 3 decimal places
-        // to avoid wrong results when comparing with another float
+
         return Math.round(value1 * value2 * 1000) / 1000f;
     }
     private List<WordWithTextPositions> normalize(List<LineItem> line)
@@ -491,11 +475,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
         int strLength = word.length();
         for (; q < strLength; q++)
         {
-            // We only normalize if the codepoint is in a given range.
-            // Otherwise, NFKC converts too many things that would cause
-            // confusion. For example, it converts the micro symbol in
-            // extended Latin to the value in the Greek script. We normalize
-            // the Unicode Alphabetic and Arabic A&B Presentation forms.
+
             char c = word.charAt(q);
             if (0xFB00 <= c && c <= 0xFDFF || 0xFE70 <= c && c <= 0xFEFF)
             {
@@ -504,9 +484,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
                     builder = new StringBuilder(strLength * 2);
                 }
                 builder.append(word, p, q);
-                // Some fonts map U+FDF2 differently than the Unicode spec.
-                // They add an extra U+0627 character to compensate.
-                // This removes the extra character for those fonts.
+
                 if (c == 0xFDF2 && q > 0
                         && (word.charAt(q - 1) == 0x0627 || word.charAt(q - 1) == 0xFE8D))
                 {
@@ -602,13 +580,13 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
     {
         Bidi bidi = new Bidi(word, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
 
-        // if there is pure LTR text no need to process further
+
         if (!bidi.isMixed() && bidi.getBaseLevel() == Bidi.DIRECTION_LEFT_TO_RIGHT)
         {
             return word;
         }
 
-        // collect individual bidi information
+
         int runCount = bidi.getRunCount();
         byte[] levels = new byte[runCount];
         Integer[] runs = new Integer[runCount];
@@ -619,10 +597,10 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             runs[i] = i;
         }
 
-        // reorder individual parts based on their levels
+
         Bidi.reorderVisually(levels, 0, runs, 0, runCount);
 
-        // collect the parts based on the direction within the run
+
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < runCount; i++)
@@ -701,10 +679,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
         }
     }
 
-//    public static void main(String[] args) {
-//        boolean overlap = overlap(500, 1, -Float.MAX_VALUE, -1);
-//        System.out.println(overlap);
-//    }
+
     private boolean overlap(float y1, float height1, float y2, float height2)
     {
         return within(y1, y2, .1f) || y2 <= y1 && y2 >= y1 - height1
@@ -725,21 +700,13 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
 
         private TextPosition position = null;
 
-        /**
-         * Constructs a PositionWrapper around the specified TextPosition object.
-         *
-         * @param position the text position.
-         */
+
         PositionWrapper(TextPosition position)
         {
             this.position = position;
         }
 
-        /**
-         * Returns the underlying TextPosition object.
-         *
-         * @return the text position
-         */
+
         public TextPosition getTextPosition()
         {
             return position;
@@ -750,9 +717,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             return isLineStart;
         }
 
-        /**
-         * Sets the isLineStart() flag to true.
-         */
+
         public void setLineStart()
         {
             this.isLineStart = true;
@@ -763,9 +728,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             return isParagraphStart;
         }
 
-        /**
-         * sets the isParagraphStart() flag to true.
-         */
+
         public void setParagraphStart()
         {
             this.isParagraphStart = true;
@@ -776,9 +739,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             return isArticleStart;
         }
 
-        /**
-         * Sets the isArticleStart() flag to true.
-         */
+
         public void setArticleStart()
         {
             this.isArticleStart = true;
@@ -789,9 +750,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             return isPageBreak;
         }
 
-        /**
-         * Sets the isPageBreak() flag to true.
-         */
+
         public void setPageBreak()
         {
             this.isPageBreak = true;
@@ -802,9 +761,7 @@ public class ModifiedPDFTextStripperByArea extends PDFTextStripper {
             return isHangingIndent;
         }
 
-        /**
-         * Sets the isHangingIndent() flag to true.
-         */
+
         public void setHangingIndent()
         {
             this.isHangingIndent = true;

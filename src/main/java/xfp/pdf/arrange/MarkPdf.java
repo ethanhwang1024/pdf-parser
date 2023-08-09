@@ -12,14 +12,45 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * @ClassName MarkPDF
- * @Description 根据配置文件标记PDF段落中的标题
- * @Author WANGHAN756
- * @Date 2021/7/2 15:23
- * @Version 1.0
- **/
+
 public class MarkPdf {
+
+
+    public static void markTitleSep(ContentPojo contentPojo){
+        MarkPojo markPojo = SettingReader.getPdfMark();
+        List<MarkPojo.TitlePattern> titlePatterns = markPojo.getTitlePatterns();
+        List<ContentPojo.contentElement> outList = contentPojo.getOutList();
+        List<Integer> boldStatuses = new ArrayList<>();
+        boldStatuses.add(2);
+        for(int i=0;i<outList.size();i++){
+            ContentPojo.contentElement p = outList.get(i);
+            if(p.getElementType().equals("table")||p.getElementType().equals("pic")){
+                continue;
+            }
+            List<ContentPojo.PdfStyleStruct> styles = p.getPdfStyleStructs();
+
+            if(styles!=null){
+                for(int j=0;j<titlePatterns.size();j++){
+                    MarkPojo.TitlePattern titlePattern = titlePatterns.get(j);
+                    String bold = titlePattern.getBold();
+                    String pattern = titlePattern.getPattern();
+                    int boldStatus = 0;
+                    if(bold!=null){
+                        boldStatus = verifyBold(styles).getStatus();
+                        if(boldStatuses.contains(boldStatus)){
+                            p.setElementType("title");
+                            continue;
+                        }
+                    }
+                        //先看整体是否是符合要求的
+                        if(p.getText().matches(pattern)){
+                            p.setElementType("title");
+                        }
+
+                }
+            }
+        }
+    }
 
     /**
      * 根据配置文件对标题进行标记

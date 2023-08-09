@@ -24,13 +24,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @ClassName CustomPDFRenderer
- * @Description 继承PDFRenderer的子类，做了部分修改以用于获得表格
- * @Author WANGHAN756
- * @Date 2021/6/2 10:43
- * @Version 1.0
- **/
 public class CustomPDFRenderer extends PDFRenderer{
 
     private static final Log LOG = LogFactory.getLog(PDFRenderer.class);
@@ -44,11 +37,8 @@ public class CustomPDFRenderer extends PDFRenderer{
     }
 
     protected final PDDocument document;
-    // TODO keep rendering state such as caches here
 
-    /**
-     * Default annotations filter, returns all annotations
-     */
+
     private AnnotationFilter annotationFilter = new AnnotationFilter()
     {
         @Override
@@ -72,10 +62,7 @@ public class CustomPDFRenderer extends PDFRenderer{
 
     private xfp.pdf.thirdparty.CustomPageDrawer pageDrawer;
 
-    /**
-     * Creates a new PDFRenderer.
-     * @param document the document to render
-     */
+
     public CustomPDFRenderer(PDDocument document)
     {
         super(document);
@@ -99,175 +86,92 @@ public class CustomPDFRenderer extends PDFRenderer{
         return pageDrawer;
     }
 
-    /**
-     * Return the AnnotationFilter.
-     *
-     * @return the AnnotationFilter
-     */
+
     public AnnotationFilter getAnnotationsFilter()
     {
         return annotationFilter;
     }
 
-    /**
-     * Set the AnnotationFilter.
-     *
-     * <p>Allows to only render annotation accepted by the filter.
-     *
-     * @param annotationsFilter the AnnotationFilter
-     */
+
     public void setAnnotationsFilter(AnnotationFilter annotationsFilter)
     {
         this.annotationFilter = annotationsFilter;
     }
 
-    /**
-     * Value indicating if the renderer is allowed to subsample images before drawing, according to
-     * image dimensions and requested scale.
-     *
-     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
-     * loss of quality, especially in images with high spatial frequency.
-     *
-     * @return true if subsampling of images is allowed, false otherwise.
-     */
+
     public boolean isSubsamplingAllowed()
     {
         return subsamplingAllowed;
     }
 
-    /**
-     * Sets a value instructing the renderer whether it is allowed to subsample images before
-     * drawing. The subsampling frequency is determined according to image size and requested scale.
-     *
-     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
-     * loss of quality, especially in images with high spatial frequency.
-     *
-     * @param subsamplingAllowed The new value indicating if subsampling is allowed.
-     */
+
     public void setSubsamplingAllowed(boolean subsamplingAllowed)
     {
         this.subsamplingAllowed = subsamplingAllowed;
     }
 
-    /**
-     * @return the defaultDestination
-     */
+
     public RenderDestination getDefaultDestination()
     {
         return defaultDestination;
     }
 
-    /**
-     * @param defaultDestination the defaultDestination to set
-     */
+
     public void setDefaultDestination(RenderDestination defaultDestination)
     {
         this.defaultDestination = defaultDestination;
     }
 
-    /**
-     * Get the rendering hints.
-     *
-     * @return the rendering hints or null if none are set.
-     */
+
     public RenderingHints getRenderingHints()
     {
         return renderingHints;
     }
 
-    /**
-     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
-     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
-     * destination.
-     *
-     * @param renderingHints
-     */
+
     public void setRenderingHints(RenderingHints renderingHints)
     {
         this.renderingHints = renderingHints;
     }
 
-    /**
-     *
-     * @return get the image downscaling optimization threshold. See
-     * {@link #getImageDownscalingOptimizationThreshold()} for details.
-     */
+
     public float getImageDownscalingOptimizationThreshold()
     {
         return imageDownscalingOptimizationThreshold;
     }
 
-    /**
-     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When
-     * rendering downscaled images and rendering hints are set to bicubic+quality and the scaling is
-     * smaller than the threshold, a more quality-optimized but slower method will be used. The
-     * default is 0.5 which is a good compromise.
-     *
-     * @param imageDownscalingOptimizationThreshold
-     */
+
     public void setImageDownscalingOptimizationThreshold(float imageDownscalingOptimizationThreshold)
     {
         this.imageDownscalingOptimizationThreshold = imageDownscalingOptimizationThreshold;
     }
 
-    /**
-     * Returns the given page as an RGB image at 72 DPI
-     * @param pageIndex the zero-based index of the page to be converted.
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImage(int pageIndex) throws IOException
     {
         return renderImage(pageIndex, 1);
     }
 
-    /**
-     * Returns the given page as an RGB image at the given scale.
-     * A scale of 1 will render at 72 DPI.
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param scale the scaling factor, where 1 = 72 DPI
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImage(int pageIndex, float scale) throws IOException
     {
         return renderImage(pageIndex, scale, ImageType.RGB);
     }
 
-    /**
-     * Returns the given page as an RGB image at the given DPI.
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param dpi the DPI (dots per inch) to render at
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImageWithDPI(int pageIndex, float dpi) throws IOException
     {
         return renderImage(pageIndex, dpi / 72f, ImageType.RGB);
     }
 
-    /**
-     * Returns the given page as an RGB image at the given DPI.
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param dpi the DPI (dots per inch) to render at
-     * @param imageType the type of image to return
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImageWithDPI(int pageIndex, float dpi, ImageType imageType)
             throws IOException
     {
         return renderImage(pageIndex, dpi / 72f, imageType);
     }
 
-    /**
-     * Returns the given page as an RGB or ARGB image at the given scale.
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param scale the scaling factor, where 1 = 72 DPI
-     * @param imageType the type of image to return
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType)
             throws IOException
     {
@@ -275,15 +179,7 @@ public class CustomPDFRenderer extends PDFRenderer{
                 defaultDestination == null ? RenderDestination.EXPORT : defaultDestination);
     }
 
-    /**
-     * Returns the given page as an RGB or ARGB image at the given scale.
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param scale the scaling factor, where 1 = 72 DPI
-     * @param imageType the type of image to return
-     * @param destination controlling visibility of optional content groups
-     * @return the rendered page image
-     * @throws IOException if the PDF cannot be read
-     */
+
     public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType, RenderDestination destination)
             throws IOException
     {
@@ -306,19 +202,13 @@ public class CustomPDFRenderer extends PDFRenderer{
 
         int rotationAngle = page.getRotation();
 
-//        int bimType = imageType.toBufferedImageType();
         int bimType = 1;
 
         if (imageType != ImageType.ARGB && hasBlendMode(page))
         {
-            // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
-            // Inpired from PDF.js: if a PDF page uses any blend modes other than Normal,
-            // PDF.js renders everything on a fully transparent RGBA canvas.
-            // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
             bimType = BufferedImage.TYPE_INT_ARGB;
         }
 
-        // swap width and height
         BufferedImage image;
         if (rotationAngle == 90 || rotationAngle == 270)
         {
@@ -331,7 +221,6 @@ public class CustomPDFRenderer extends PDFRenderer{
 
         pageImage = image;
 
-        // use a transparent background if the image type supports alpha
         Graphics2D g = image.createGraphics();
         if (image.getType() == BufferedImage.TYPE_INT_ARGB)
         {
@@ -345,7 +234,6 @@ public class CustomPDFRenderer extends PDFRenderer{
 
         transform(g, page, scale, scale);
 
-        // the end-user may provide a custom PageDrawer
         RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
 
@@ -374,7 +262,6 @@ public class CustomPDFRenderer extends PDFRenderer{
 
         if (image.getType() != 1)
         {
-            // PDFBOX-4095: draw temporary transparent image on white background
             BufferedImage newImage =
                     new BufferedImage(image.getWidth(), image.getHeight(), 1);
             Graphics2D dstGraphics = newImage.createGraphics();
@@ -388,50 +275,20 @@ public class CustomPDFRenderer extends PDFRenderer{
         return image;
     }
 
-    /**
-     * Renders a given page to an AWT Graphics2D instance at 72 DPI.
-     * <p>
-     * Read {@link #renderPageToGraphics(int, Graphics2D, float, float, RenderDestination) renderPageToGraphics(int, Graphics2D, float, float, RenderDestination)}
-     * before using this.
-     *
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param graphics the Graphics2D on which to draw the page
-     * @throws IOException if the PDF cannot be read
-     */
+
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics) throws IOException
     {
         renderPageToGraphics(pageIndex, graphics, 1);
     }
 
-    /**
-     * Renders a given page to an AWT Graphics2D instance.
-     * <p>
-     * Read {@link #renderPageToGraphics(int, Graphics2D, float, float, RenderDestination) renderPageToGraphics(int, Graphics2D, float, float, RenderDestination)}
-     * before using this.
-     *
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param graphics the Graphics2D on which to draw the page
-     * @param scale the scaling factor, where 1 = 72 DPI
-     * @throws IOException if the PDF cannot be read
-     */
+
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scale)
             throws IOException
     {
         renderPageToGraphics(pageIndex, graphics, scale, scale);
     }
 
-    /**
-     * Renders a given page to an AWT Graphics2D instance.
-     * <p>
-     * Read {@link #renderPageToGraphics(int, Graphics2D, float, float, RenderDestination) renderPageToGraphics(int, Graphics2D, float, float, RenderDestination)}
-     * before using this.
-     *
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param graphics the Graphics2D on which to draw the page
-     * @param scaleX the scale to draw the page at for the x-axis, where 1 = 72 DPI
-     * @param scaleY the scale to draw the page at for the y-axis, where 1 = 72 DPI
-     * @throws IOException if the PDF cannot be read
-     */
+
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY)
             throws IOException
     {
@@ -439,28 +296,7 @@ public class CustomPDFRenderer extends PDFRenderer{
                 defaultDestination == null ? RenderDestination.VIEW : defaultDestination);
     }
 
-    /**
-     * Renders a given page to an AWT Graphics2D instance.
-     * <p>
-     * Known problems:
-     * <ul>
-     * <li>rendering of PDF files with transparencies is not supported on Ubuntu, see
-     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4581">PDFBOX-4581</a> and
-     * <a href="https://bugs.openjdk.java.net/browse/JDK-6689349">JDK-6689349</a>. Rendering will
-     * not abort, but the pages will be rendered incorrectly.</li>
-     * <li>Clipping the Graphics2D will not work properly, see
-     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4583">PDFBOX-4583</a>.</li>
-     * </ul>
-     * If you encounter these problems, then you should render into an image by using the
-     * {@link #renderImage(int) renderImage} methods.
-     *
-     * @param pageIndex the zero-based index of the page to be converted
-     * @param graphics the Graphics2D on which to draw the page
-     * @param scaleX the scale to draw the page at for the x-axis, where 1 = 72 DPI
-     * @param scaleY the scale to draw the page at for the y-axis, where 1 = 72 DPI
-     * @param destination controlling visibility of optional content groups
-     * @throws IOException if the PDF cannot be read
-     */
+
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY, RenderDestination destination)
             throws IOException
     {
@@ -496,11 +332,7 @@ public class CustomPDFRenderer extends PDFRenderer{
         drawer.drawPage(graphics, cropBox);
     }
 
-    /**
-     * Indicates whether an optional content group is enabled.
-     * @param group the group
-     * @return true if the group is enabled
-     */
+
     public boolean isGroupEnabled(PDOptionalContentGroup group)
     {
         PDOptionalContentProperties ocProperties = document.getDocumentCatalog().getOCProperties();
@@ -512,7 +344,6 @@ public class CustomPDFRenderer extends PDFRenderer{
     {
         graphics.scale(scaleX, scaleY);
 
-        // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
         int rotationAngle = page.getRotation();
         PDRectangle cropBox = page.getCropBox();
 
@@ -573,15 +404,6 @@ public class CustomPDFRenderer extends PDFRenderer{
         return r;
     }
 
-    /**
-     * Returns a new PageDrawer instance, using the given parameters. May be overridden.
-     */
-//    protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
-//    {
-//        PageDrawer pageDrawer = new PageDrawer(parameters);
-//        pageDrawer.setAnnotationFilter(annotationFilter);
-//        return pageDrawer;
-//    }
 
     private boolean hasBlendMode(PDPage page)
     {
@@ -596,8 +418,6 @@ public class CustomPDFRenderer extends PDFRenderer{
             PDExtendedGraphicsState extGState = resources.getExtGState(name);
             if (extGState == null)
             {
-                // can happen if key exists but no value
-                // see PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf
                 continue;
             }
             BlendMode blendMode = extGState.getBlendMode();
@@ -609,11 +429,7 @@ public class CustomPDFRenderer extends PDFRenderer{
         return false;
     }
 
-    /**
-     * Returns the image to which the current page is being rendered.
-     * May be null if the page is rendered to a Graphics2D object
-     * instead of a BufferedImage.
-     */
+
     BufferedImage getPageImage()
     {
         return pageImage;
@@ -660,7 +476,6 @@ public class CustomPDFRenderer extends PDFRenderer{
                 int v = Integer.parseInt(matcher.group(1));
                 if (v >= min)
                 {
-                    // LCMS no longer bad
                     return true;
                 }
             }
@@ -674,7 +489,6 @@ public class CustomPDFRenderer extends PDFRenderer{
 
     private static boolean isMinJdk8()
     {
-        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
         String version = System.getProperty("java.specification.version");
         final StringTokenizer st = new StringTokenizer(version, ".");
         try
@@ -689,7 +503,6 @@ public class CustomPDFRenderer extends PDFRenderer{
         }
         catch (NumberFormatException nfe)
         {
-            // maybe some new numbering scheme in the 22nd century
             return true;
         }
     }

@@ -10,13 +10,7 @@ import xfp.pdf.tools.RenderInfo;
 
 import java.util.List;
 
-/**
- * @ClassName ContentPojo
- * @Description 输出json的映射pojo,注意：
- * @Author WANGHAN756
- * @Date 2021/4/21 9:20
- * @Version 1.0
- **/
+
 @Data
 @NoArgsConstructor
 public class ContentPojo {
@@ -124,7 +118,6 @@ public class ContentPojo {
                 return;
             }
             this.text = text;
-//            this.text = TextTool.replaceSpecialUnicode(text);
         }
 
         /**
@@ -238,7 +231,6 @@ public class ContentPojo {
                     return;
                 }
                 this.text = text;
-            //    this.text = TextTool.replaceSpecialUnicode(text);
             }
 
 

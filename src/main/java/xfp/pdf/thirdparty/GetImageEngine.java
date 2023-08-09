@@ -28,9 +28,7 @@ import xfp.pdf.pojo.Tu;
 
 import javax.imageio.ImageIO;
 
-/**
- * This is an example on how to get the x/y coordinates of image location and size of image.
- */
+
 public class GetImageEngine extends PDFStreamEngine
 {
     public int imageNumber = 1;
@@ -52,9 +50,7 @@ public class GetImageEngine extends PDFStreamEngine
         return picSavePath;
     }
 
-    /**
-     * @throws IOException If there is an error loading text stripper properties.
-     */
+
     public GetImageEngine(String picSavePath) throws IOException
     {
         this.picSavePath = picSavePath;
@@ -67,12 +63,7 @@ public class GetImageEngine extends PDFStreamEngine
         addOperator(new SetMatrix());
     }
 
-    /**
-     * @param operator The operation to perform.
-     * @param operands The list of arguments.
-     *
-     * @throws IOException If there is an error processing the operation.
-     */
+
     @Override
     protected void processOperator( Operator operator, List<COSBase> operands) throws IOException
     {
@@ -80,9 +71,9 @@ public class GetImageEngine extends PDFStreamEngine
         if( "Do".equals(operation) )
         {
             COSName objectName = (COSName) operands.get( 0 );
-            // get the PDF object
+
             PDXObject xobject = getResources().getXObject( objectName );
-            // check if the object is an image object
+
             if( xobject instanceof PDImageXObject)
             {
                 PDImageXObject image = (PDImageXObject)xobject;
@@ -90,16 +81,7 @@ public class GetImageEngine extends PDFStreamEngine
                 int imageHeight = image.getHeight();
 
                 Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
-//                float imageXScale = ctmNew.getScalingFactorX();
-//                float imageYScale = ctmNew.getScalingFactorY();
-//                // position of image in the pdf in terms of user space units
-//                System.out.println("position in PDF = " + ctmNew.getTranslateX() + ", " + ctmNew.getTranslateY() + " in user space units");
-//                // raw size in pixels
-//                System.out.println("raw image size  = " + imageWidth + ", " + imageHeight + " in pixels");
-//                // displayed size in user space units
-//                System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in user space units");
 
-                // same image to local
                 BufferedImage bImage = image.getImage();
                 ImageIO.write(bImage,"PNG",new File(picSavePath + "/"+imageNumber+".png"));
                 System.out.println("Image saved.");

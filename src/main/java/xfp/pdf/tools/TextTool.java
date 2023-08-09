@@ -24,13 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @ClassName TextTool
- * @Description 涉及到文本处理的工具类
- * @Author WANGHAN756
- * @Date 2021/4/21 9:20
- * @Version 1.0
- **/
+
 public class TextTool {
 
     /**
@@ -70,10 +64,6 @@ public class TextTool {
                         ||fa.getName().equals("WordStyleStruct")
                         || fa.getName().equals("pdfStyleStructs")  || fa.getName().equals("trueColIndex")
                         ||fa.getName().equals("vMerge");
-//                return fa.getName().equals("startLine") || fa.getName().equals("startLineStatus") ||
-//                        fa.getName().equals("endLine") || fa.getName().equals("endLineStatus")
-//                        || fa.getName().equals("trueColIndex")
-//                        ||fa.getName().equals("vMerge");
             }
 
             @Override
@@ -82,10 +72,6 @@ public class TextTool {
                 return false;
             }
         }).create();
-        // pretty print
-        // GsonBuilder gsonBuilder = new GsonBuilder();
-        // gsonBuilder.setPrettyPrinting();
-        // Gson gson = gsonBuilder.create();
         return gson.toJson(object);
     }
 
@@ -140,7 +126,6 @@ public class TextTool {
     }
 
 
-    //使用pdfbox批量提取文本，大幅提升效率
     public static List<Tu.Tuple2<String,Rectangle2D>> grabText(PDDocument pd, List<Rectangle2D> ranges, int pageNum) throws IOException {
         List<Tu.Tuple2<String,Rectangle2D>> result = new ArrayList<>();
         PDFTextStripperByArea stripper = new PDFTextStripperByArea();
@@ -150,10 +135,8 @@ public class TextTool {
             count++;
         }
 
-//        System.out.println(pageNum);
         PDPage docPage = pd.getPage(pageNum-1);
-//        PDRectangle cropBox = docPage.getCropBox();
-//        System.out.println(cropBox);
+
         stripper.extractRegions(docPage);
 
         for(int i=0;i<count;i++){
@@ -165,14 +148,7 @@ public class TextTool {
         return result;
     }
 
-    /**
-     * grabText的增强版本，可以提取包括样式在内的详细内容
-     * @param pd PDDocument
-     * @param ranges 范围 tuple->如果key为true，则提取出详细内容
-     * @param pageNum 第几页
-     * @return
-     * @throws IOException
-     */
+
     public static List<Tu.Tuple3<List<List<Tu.Tuple2<TextPosition, RenderInfo>>>,String,Rectangle2D>> grabTextEnhance(PDDocument pd, List<Tu.Tuple2<Boolean,Rectangle2D>> ranges,int pageNum) throws IOException {
         List<Tu.Tuple3<List<List<Tu.Tuple2<TextPosition, RenderInfo>>>,String,Rectangle2D>> result = new ArrayList<>();
 
@@ -187,7 +163,6 @@ public class TextTool {
 
         PDPage docPage = pd.getPage(pageNum-1);
         PDRectangle cropBox = docPage.getCropBox();
-//        System.out.println(cropBox);
         stripper.extractRegions(docPage);
 
         for(int i=0;i<count;i++){
@@ -208,11 +183,6 @@ public class TextTool {
         return result;
     }
 
-    /**
-     * 是否包含中文
-     * @param str 字符串
-     * @return 是或不是
-     */
     public static boolean isContainChinese(String str){
         String reg = "[\\u4E00-\\u9FA5]+";
         Pattern p = Pattern.compile(reg);
@@ -223,11 +193,8 @@ public class TextTool {
             return false;
         }
     }
-    /**
-     * 是否包含英文
-     * @param str 字符串
-     * @return 是或不是
-     */
+
+
     public static boolean isContainEnglish(String str){
         String reg = "[A-Za-z]";
         Pattern p = Pattern.compile(reg);

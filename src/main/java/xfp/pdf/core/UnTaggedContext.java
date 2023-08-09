@@ -19,14 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
-/**
- * @ClassName UntaggedContext
- * @Description untaggedpdf解析依赖的上下文信息,主要是为了避免
- *              重复计算和加入预热机制。
- * @Author WANGHAN756
- * @Date 2021/6/23 9:58
- * @Version 1.0
- **/
 @Data
 public class UnTaggedContext {
     private PDDocument document;
@@ -378,22 +370,5 @@ public class UnTaggedContext {
         lastTextPage = textPage;
     }
 
-//    private static boolean verifyBlankLine(List<Tu.Tuple2<TextPosition, RenderInfo>> line){
-//        //判断某一行是否是空行，方便做类似trim的操作，但是此时的单位是行
-//        StringBuilder sb = new StringBuilder();
-//        for(Tu.Tuple2<TextPosition, RenderInfo> tu:line){
-//            String unicode = tu.getKey().getUnicode();
-//            sb.append(unicode.replaceAll("[\\pZ]","").trim());
-//        }
-//        return sb.toString().equals("");
-//    }
-
-
-
-
-//    public static void main(String[] args) {
-//        boolean f = isContainEnglish("a");
-//        System.out.println(f);
-//    }
 
 }
