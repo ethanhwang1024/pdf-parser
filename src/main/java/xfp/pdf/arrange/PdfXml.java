@@ -10,7 +10,6 @@ import xfp.pdf.pojo.ExtractPojo;
 import xfp.pdf.pojo.Tu;
 import xfp.pdf.tools.SettingReader;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.apache.pdfbox.text.TextPosition;
 import xfp.pdf.tools.RenderInfo;
 
-
 import java.util.List;
 
 

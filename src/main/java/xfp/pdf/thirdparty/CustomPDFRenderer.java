@@ -14,7 +14,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.rendering.*;
-//
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class CustomPDFRenderer extends PDFRenderer{
 
     private float imageDownscalingOptimizationThreshold = 0.5f;
 
-    private xfp.pdf.thirdparty.CustomPageDrawer pageDrawer;
+    private CustomPageDrawer pageDrawer;
 
 
     public CustomPDFRenderer(PDDocument document)
@@ -78,11 +78,11 @@ public class CustomPDFRenderer extends PDFRenderer{
     @Override
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
     {
-        pageDrawer = new  xfp.pdf.thirdparty.CustomPageDrawer(parameters);
+        pageDrawer = new  CustomPageDrawer(parameters);
         return pageDrawer;
     }
 
-    public xfp.pdf.thirdparty.CustomPageDrawer getDrawer(){
+    public CustomPageDrawer getDrawer(){
         return pageDrawer;
     }
 

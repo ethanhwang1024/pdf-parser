@@ -6,7 +6,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.text.TextPosition;
-
 import xfp.pdf.pojo.*;
 import xfp.pdf.table.CellAnalyser;
 import xfp.pdf.thirdparty.GetImageEngine;
@@ -16,8 +15,8 @@ import xfp.pdf.tools.TextTool;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,54 @@ public class UnTaggedAnalyser {
     }
     private static GetImageEngine getImageEngine;
 
-    public static List<ContentPojo.contentElement> parsePage(PDDocument document, Integer p, UnTaggedContext untaggedContext,String picSavePath) throws IOException{
+    //直接提取整页文本
+    public static List<ContentPojo.contentElement> parsePagePureText(PDDocument document,Integer p) throws IOException {
+        List<Tu.Tuple2<Boolean, Rectangle2D>> contentRanges = new ArrayList<>();
+
+        //如果是A7，是841.92
+        float maxHeight = document.getPage(p - 1).getCropBox().getHeight();
+        //如果是A7，是595.32
+        float maxWidth = document.getPage(p - 1).getCropBox().getWidth();
+
+        contentRanges.add(new Tu.Tuple2<>(true,new Rectangle2D.Float(0,0,maxWidth,maxHeight)));
+
+        List<Tu.Tuple3<List<List<Tu.Tuple2<TextPosition, RenderInfo>>>, String,Rectangle2D>> range = TextTool.grabTextEnhance(document, contentRanges, p);
+        List<List<Tu.Tuple2<TextPosition, RenderInfo>>> lists = UnTaggedAnalyser.sortAndTrimForRange(range.get(0).getValue1());
+
+        List<ContentPojo.contentElement> outList =  new ArrayList<>();
+
+        for(List<Tu.Tuple2<TextPosition, RenderInfo>> list:lists){
+            ContentPojo.contentElement t = new ContentPojo.contentElement();
+            List<List<Tu.Tuple2<TextPosition, RenderInfo>>> tmpList = new ArrayList<>();
+            tmpList.add(list);
+            Tu.Tuple2<String, List<ContentPojo.PdfStyleStruct>> regionString = UnTaggedAnalyser.formRegionString(tmpList);
+            Tu.Tuple4<Float, Float, Float, Float> coor = UnTaggedAnalyser.formRegion(tmpList);
+            t.setText(regionString.getKey());
+            t.setPdfStyleStructs(regionString.getValue());
+            t.setElementType("text");
+            t.setPageNumber(p);
+            t.setPageHeight(maxHeight);
+            t.setPageWidth(maxWidth);
+            if(coor!=null){
+                Float xStart = coor.getValue1();
+                Float xEnd = coor.getValue2();
+                Float yStart = maxHeight -  coor.getValue3();
+                Float yEnd = maxHeight - coor.getValue4();
+
+                t.setXStart(xStart);
+                t.setYStart(yStart);
+                t.setWidth(xEnd-xStart);
+                t.setHeight(yEnd-yStart);
+            }
+            outList.add(t);
+        }
+
+        return outList;
+    }
+
+
+
+    public static List<ContentPojo.contentElement> parsePage(PDDocument document, Integer p, UnTaggedContext untaggedContext,String picSavePath,boolean verifyPara) throws IOException{
 
         List<Shape> shapes = CellAnalyser.getShapes(document, p);
         List<Tu.Tuple2<Tu.Tuple2<Double, Double>, CellAnalyser.TableInfo>> tableInfos = CellAnalyser.getTableInfos(shapes);
@@ -145,7 +191,18 @@ public class UnTaggedAnalyser {
         untaggedContext.addTextPage(textBlocks,p);
 
 
-        List<LineStatus[]> lineStatuses = UnTaggedAnalyser.parseTextBlock(untaggedContext);
+
+        List<LineStatus[]> lineStatuses = new ArrayList<>();
+        if(verifyPara){
+            lineStatuses = UnTaggedAnalyser.parseTextBlock(untaggedContext);
+        }else{
+            LineStatus[] tmpLS = new LineStatus[1000];
+            Arrays.fill(tmpLS, LineStatus.ParaEnd);
+            for(TextBlock t:textBlocks){
+                lineStatuses.add(tmpLS);
+            }
+        }
+//        List<LineStatus[]> lineStatuses = UnTaggedAnalyser.parseTextBlock(untaggedContext);
         //结构化region
         List<List<Tu.Tuple2<TextPosition, RenderInfo>>> structRegion = new ArrayList<>();
         List<LineStatus> tmpLineStatuses = new ArrayList<>();
@@ -168,7 +225,9 @@ public class UnTaggedAnalyser {
             for(int i=0;i<features.length;i++){
                 //从这里可以获得机器学习数据集
                 LineStatus lineStatus = features[i];
-
+                if(region.size()<=i){
+                    break;
+                }
 
                 switch (lineStatus){
                     case ParaEnd:{
@@ -360,7 +419,7 @@ public class UnTaggedAnalyser {
 
 
             //如果是最后一个了，判断是否是页码
-            if(count == blockList.size()){
+            if(count == blockList.size() && !newRegion.isEmpty()){
                 boolean b = verifyPagination(untaggedContext,newRegion.get(newRegion.size() - 1));
                 if(b){
                     lineStatuses[lineStatuses.length-1] = LineStatus.Footer;
@@ -653,9 +712,15 @@ public class UnTaggedAnalyser {
             //如果是空字符串，这里的getFont的结果可能为null
             if(tp.getFont()!=null){
                 PDFontDescriptor fontDescriptor = tp.getFont().getFontDescriptor();
-                pdfStyleStruct.setFontName(fontDescriptor.getFontName());
-                pdfStyleStruct.setFontWeight(fontDescriptor.getFontWeight());
-                pdfStyleStruct.setCharSet(fontDescriptor.getCharSet());
+                if(fontDescriptor!=null){
+                    pdfStyleStruct.setFontName(fontDescriptor.getFontName());
+                }
+                if(fontDescriptor!=null){
+                    pdfStyleStruct.setFontWeight(fontDescriptor.getFontWeight());
+                }
+                if(fontDescriptor!=null){
+                    pdfStyleStruct.setCharSet(fontDescriptor.getCharSet());
+                }
             }
             styleList.add(pdfStyleStruct);
         }

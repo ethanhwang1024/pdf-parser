@@ -16,13 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @ClassName SingleTest
- * @Description untaggedPdf 单文件解析
- * @Author WANGHAN756
- * @Date 2021/6/23 17:44
- * @Version 1.0
- **/
+
 public class SingleTest {
 
     static {
@@ -45,34 +39,9 @@ public class SingleTest {
     }
 
     private static String parsingUnTaggedPdfWithTableDetectionAndPicture(PDDocument pdd,String fileName,String outputFileDir) throws IOException {
-        ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,picSavePath);
+        ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,picSavePath,true);
 
         FileTool.saveHTML(outputFileDir,contentPojo,fileName);
-//
-//        //null表示使用默认配置文件
-//        MarkPdf.markTitle(contentPojo,null);
-
-//        Document doc = PdfXml.buildXml(contentPojo);
-//        FileTool.saveXML(outputFileDir,doc,fileName);
-
-//
-//        //extractPojo为null读取默认配置文件
-//        List<Tu.Tuple2<String, String>> extract = PdfXml.extract(doc, contentPojo,null);
-//        for(Tu.Tuple2<String, String> tu:extract){
-//            String key = tu.getKey();
-//            String value = tu.getValue();
-//            System.out.println("===========q============");
-//            System.out.println(key);
-//            System.out.println("===========a============");
-//            System.out.println(value);
-//        }
-//
-//
-//        String json = FileTool.saveJson(outputFileDir, contentPojo, fileName);
-//        FileTool.saveHTML(outputFileDir,contentPojo,fileName);
-//        FileTool.saveText(outputFileDir,contentPojo,fileName);
-//
-//        return json;
         return null;
     }
 

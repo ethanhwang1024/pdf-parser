@@ -1,17 +1,14 @@
 package xfp.pdf.tools;
 
 import org.apache.pdfbox.pdmodel.PDPage;
-
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.text.TextPositionComparator;
 import xfp.pdf.pojo.Tu;
 
-
 import java.awt.geom.Rectangle2D;
 import java.io.*;
-
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.*;

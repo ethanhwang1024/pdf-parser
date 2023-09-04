@@ -22,6 +22,24 @@ public class CustomPageDrawer extends PageDrawer {
 
     private List<Shape> tableLines = new ArrayList<>();
 
+    private List<Shape> strokeLines = new ArrayList<>();
+
+    private List<Shape> fillLines = new ArrayList<>();
+
+    private List<Shape> fillAndStrokeLine = new ArrayList<>();
+
+    public List<Shape> getFillAndStrokeLine() {
+        return fillAndStrokeLine;
+    }
+
+    public List<Shape> getStrokeLines() {
+        return strokeLines;
+    }
+
+    public List<Shape> getFillLines() {
+        return fillLines;
+    }
+
     public List<Shape> getTableLines() {
         return tableLines;
     }
@@ -89,7 +107,7 @@ public class CustomPageDrawer extends PageDrawer {
         Shape bbox = getLinePath().getBounds2D();
 
         if(bbox.getBounds2D().getWidth()>1.0f||bbox.getBounds2D().getHeight()>1.0f){
-            tableLines.add(bbox);
+            fillLines.add(bbox);
         }
 
 
@@ -120,6 +138,35 @@ public class CustomPageDrawer extends PageDrawer {
 
         Shape bbox = getLinePath().getBounds2D();
 
+        if(bbox.getBounds2D().getWidth()>1.0f||bbox.getBounds2D().getHeight()>1.0f){
+            strokeLines.add(bbox);
+        }
+
+        Graphics2D graphics = getGraphics();
+        Color color = graphics.getColor();
+        Stroke stroke = graphics.getStroke();
+        Shape clip = graphics.getClip();
+
+
+        graphics.setClip(graphics.getDeviceConfiguration().getBounds());
+        graphics.setColor(Color.RED);
+        graphics.setStroke(new BasicStroke(.5f));
+        graphics.draw(bbox);
+
+        graphics.setStroke(stroke);
+        graphics.setColor(color);
+        graphics.setClip(clip);
+
+        getLinePath().reset();
+    }
+
+    @Override
+    public void closePath() {
+        Shape bbox = getLinePath().getBounds2D();
+
+        if(bbox.getBounds2D().getWidth()>1.0f||bbox.getBounds2D().getHeight()>1.0f){
+            fillAndStrokeLine.add(bbox);
+        }
 
         Graphics2D graphics = getGraphics();
         Color color = graphics.getColor();

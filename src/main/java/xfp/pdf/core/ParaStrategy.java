@@ -7,7 +7,6 @@ import xfp.pdf.pojo.Tu;
 import xfp.pdf.tools.RenderInfo;
 import xfp.pdf.tools.TextTool;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

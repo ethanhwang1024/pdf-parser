@@ -7,15 +7,11 @@ import lombok.ToString;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-
-
-
 import xfp.pdf.pojo.ContentPojo;
 import xfp.pdf.pojo.Tu;
 import xfp.pdf.thirdparty.CustomPDFRenderer;
-import  xfp.pdf.thirdparty.CustomPageDrawer;
+import xfp.pdf.thirdparty.CustomPageDrawer;
 import xfp.pdf.tools.TextTool;
-
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -104,13 +100,39 @@ public class CellAnalyser {
     private static final double maxHorizonLineWidth = 3d;
 
 
+//    public static List<Rectangle> getRectangles(PDDocument doc,int pageNum) throws IOException {
+//        CustomPDFRenderer renderer = new CustomPDFRenderer(doc);
+//        BufferedImage image = renderer.renderImage(pageNum-1);
+//        CustomPageDrawer drawer = renderer.getDrawer();
+//
+//        List<Rectangle> fillRec = drawer.getFillRec();
+//        List<Rectangle> strokeRec = drawer.getStrokeRec();
+//
+//        if(strokeRec.size()!=0){
+//            return strokeRec;
+//        }else{
+//            return fillRec;
+//        }
+//    }
+
     public static List<Shape> getShapes(PDDocument doc,int pageNum) throws IOException {
         CustomPDFRenderer renderer = new CustomPDFRenderer(doc);
         BufferedImage image = renderer.renderImage(pageNum-1);
         CustomPageDrawer drawer = renderer.getDrawer();
 
         List<Shape> tableLines = drawer.getTableLines();
-        return tableLines;
+        List<Shape> fillLines = drawer.getFillLines();
+        List<Shape> strokeLines = drawer.getStrokeLines();
+//        List<Shape> fillAndStrokeLine = drawer.getFillAndStrokeLine();
+//
+//        return fillAndStrokeLine;
+
+        if(strokeLines.size()!=0){
+            return strokeLines;
+        }else{
+            return fillLines;
+        }
+//        return tableLines;
     }
 
     //使用heightStart和heightEnd做一层过滤
@@ -165,14 +187,64 @@ public class CellAnalyser {
         }
     }
 
+//    public static List<Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>> getTableInfosRec(List<Rectangle> rectangles){
+//
+//    }
 
     public static List<Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>> getTableInfos(List<Shape> tableLines) {
+        /**tableLines并不一定是线，可能是一块区域，当w和h同时大于6时，我们认为这是一块区域，该区域可以生成4条线 */
+        List<TableLine.VerticalLine> verticalLines = new ArrayList<>();
+        List<TableLine.HorizonLine> horizonLines = new ArrayList<>();
+        for(Shape shape:tableLines){
+            Rectangle2D bounds2D = shape.getBounds();
+            double width = bounds2D.getWidth();
+            double height = bounds2D.getHeight();
+            if(bounds2D.getWidth()*bounds2D.getHeight()>=300000){
+                continue;
+            }
+            if(width>=8&&height>=8){
+                continue;
+            }
+
+            if(width<maxVerticalLineWidth){
+                verticalLines.add(new TableLine.VerticalLine(bounds2D.getX(), bounds2D.getY(),
+                        bounds2D.getY() + bounds2D.getHeight()));
+            }
+            if(height<maxHorizonLineWidth){
+                horizonLines.add(new TableLine.HorizonLine(bounds2D.getY(), bounds2D.getX(),
+                        bounds2D.getX() + bounds2D.getWidth()));
+            }
+
+
+//            if(width>=6&&height>=6){
+//                //bottom line  x y w h
+//                TableLine.HorizonLine bottomLine = new TableLine.HorizonLine(bounds2D.getY(), bounds2D.getX(), bounds2D.getX() + bounds2D.getWidth());
+////                TableLine.HorizonLine bottomLine = new TableLine.HorizonLine(shape.getBounds2D().getY(), shape.getBounds2D().getX(), 585);
+//                //top line
+//                TableLine.HorizonLine topLine = new TableLine.HorizonLine(bounds2D.getY()+bounds2D.getHeight(), bounds2D.getX(), bounds2D.getX() + bounds2D.getWidth());
+////                TableLine.HorizonLine topLine = new TableLine.HorizonLine(shape.getBounds2D().getY()+shape.getBounds2D().getHeight(), shape.getBounds2D().getX(), 585);
+//                //left line
+//                TableLine.VerticalLine leftLine = new TableLine.VerticalLine(bounds2D.getX(),bounds2D.getY(),bounds2D.getY()+bounds2D.getHeight());
+//                //right line
+//                TableLine.VerticalLine rightLine = new TableLine.VerticalLine(bounds2D.getX()+bounds2D.getWidth(),bounds2D.getY(),bounds2D.getY()+bounds2D.getHeight());
+//                horizonLines.add(bottomLine);
+//                horizonLines.add(topLine);
+//                verticalLines.add(leftLine);
+//                verticalLines.add(rightLine);
+//            }else{
+//                if(width<maxVerticalLineWidth){
+//                    verticalLines.add(new TableLine.VerticalLine(bounds2D.getX(), bounds2D.getY(),
+//                            bounds2D.getY() + bounds2D.getHeight()));
+//                }
+//                if(height<maxHorizonLineWidth){
+//                    horizonLines.add(new TableLine.HorizonLine(bounds2D.getY(), bounds2D.getX(),
+//                            bounds2D.getX() + bounds2D.getWidth()));
+//                }
+//            }
+        }
+
+
         /**---------------------分离出并合并相连的竖线------------------------------------------ */
-        List<TableLine.VerticalLine> verticalLines = tableLines.stream().filter(x -> {
-            double width = x.getBounds2D().getWidth();
-            return width < maxVerticalLineWidth;
-        }).map(x -> new TableLine.VerticalLine(x.getBounds2D().getX(), x.getBounds2D().getY(),
-                x.getBounds2D().getY() + x.getBounds2D().getHeight())).collect(Collectors.toList());
         //统一x值
         unifyVerticalLine(verticalLines);
         Collections.sort(verticalLines);
@@ -220,12 +292,12 @@ public class CellAnalyser {
         }
 
         /**---------------------分离出并合并相连的横线------------------------------------------ */
-        List<TableLine.HorizonLine> horizonLines = tableLines.stream().filter(x -> {
-            double height = x.getBounds2D().getHeight();
-            return height < maxHorizonLineWidth;
-        }).map(x -> new TableLine.HorizonLine(x.getBounds2D().getY(), x.getBounds2D().getX(),
-                x.getBounds2D().getX() + x.getBounds2D().getWidth()))
-                .collect(Collectors.toList());
+//        List<TableLine.HorizonLine> horizonLines = tableLines.stream().filter(x -> {
+//            double height = x.getBounds2D().getHeight();
+//            return height < maxHorizonLineWidth;
+//        }).map(x -> new TableLine.HorizonLine(x.getBounds2D().getY(), x.getBounds2D().getX(),
+//                x.getBounds2D().getX() + x.getBounds2D().getWidth()))
+//                .collect(Collectors.toList());
         //统一y值
         unifyHorizonLine(horizonLines);
         Collections.sort(horizonLines);
@@ -341,6 +413,34 @@ public class CellAnalyser {
                 double yEnd1 = y.getYEnd();
                 return yStart <= yStart1 && yEnd >= yEnd1;
             }).collect(Collectors.toList());
+
+            /**
+             * ---------------
+             *   |   |    |
+             * --------------
+             * 表格可能缺乏左右边框，补上左右边框，取横线的最小值和最大值
+             */
+            if(horizonLines1.size()!=0){
+                TableLine.HorizonLine lastHLine = horizonLines1.get(horizonLines1.size()-1);
+                double xs = lastHLine.getXStart();
+                double xe = lastHLine.getXEnd();
+                double lhy = lastHLine.getY();
+                TableLine.HorizonLine firstHLine = horizonLines1.get(0);
+                double fhy = firstHLine.getY();
+                if(verticalLines1.size()!=0){
+                    TableLine.VerticalLine firstVLine = verticalLines1.get(0);
+                    TableLine.VerticalLine lastVLine = verticalLines1.get(verticalLines1.size() - 1);
+                    double fxv = firstVLine.getX();
+                    double lxv = lastVLine.getX();
+                    if(fxv-xs>20.0f){
+                        verticalLines1.add(0,new TableLine.VerticalLine(xs,lhy,fhy));
+                    }
+                    if(xe-lxv>20.0f){
+                        verticalLines1.add(new TableLine.VerticalLine(xe,lhy,fhy));
+                    }
+                }
+            }
+
             TableInfo tableInfo = getTableInfo(horizonLines1, verticalLines1);
 
             return new Tu.Tuple2<Tu.Tuple2<Double, Double>, TableInfo>(x, tableInfo);
@@ -770,9 +870,9 @@ public class CellAnalyser {
 
     private static void unifyVerticalLine(List<TableLine.VerticalLine> verticalLines){
         TreeSet<Double> treeSet = new TreeSet<>((Comparator<Double>) (o1, o2) -> {
-            if (Math.abs(o1 - o2) <= 3.0d) {
+            if (Math.abs(o1 - o2) <= 5.0d) {
                 return 0;
-            } else if (o1 - o2 > 3.0d) {
+            } else if (o1 - o2 > 5.0d) {
                 return 1;
             } else {
                 return -1;
@@ -785,7 +885,7 @@ public class CellAnalyser {
         verticalLines.forEach(x->{
             double x1 = x.getX();
             for(Double d:treeSet){
-                if(Math.abs(d-x1)<3.0d){
+                if(Math.abs(d-x1)<5.0d){
                     x.setX(d);
                     break;
                 }
@@ -794,9 +894,9 @@ public class CellAnalyser {
     }
     private static void unifyHorizonLine(List<TableLine.HorizonLine> horizonLines){
         TreeSet<Double> treeSet = new TreeSet<>((Comparator<Double>) (o1, o2) -> {
-            if (Math.abs(o1 - o2) <= 2d) {
+            if (Math.abs(o1 - o2) <= 5d) {
                 return 0;
-            } else if (o1 - o2 > 2d) {
+            } else if (o1 - o2 > 5d) {
                 return 1;
             } else {
                 return -1;
@@ -808,7 +908,7 @@ public class CellAnalyser {
         horizonLines.forEach(x->{
             double y1 = x.getY();
             for(Double d:treeSet){
-                if(Math.abs(d-y1)<2d){
+                if(Math.abs(d-y1)<5d){
                     x.setY(d);
                     break;
                 }

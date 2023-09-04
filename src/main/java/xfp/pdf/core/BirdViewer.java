@@ -10,7 +10,6 @@ import xfp.pdf.pojo.Tu;
 import xfp.pdf.table.CellAnalyser;
 import xfp.pdf.tools.RenderInfo;
 
-
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;

@@ -1,12 +1,9 @@
 package xfp.pdf.core;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import xfp.pdf.arrange.MarkPdf;
 import xfp.pdf.pojo.BoldStatus;
 import xfp.pdf.pojo.ContentPojo;
-import xfp.pdf.pojo.MarkPojo;
 import xfp.pdf.pojo.SearchPattern;
 
 import java.io.IOException;
@@ -16,30 +13,43 @@ import java.util.List;
 
 public class PdfParser {
 
-    public static ContentPojo parsingUnTaggedPdfWithTableDetection(PDDocument pdd) throws IOException {
-        return parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,null);
+    public static ContentPojo parsingUnTaggedPdf(PDDocument pdd) throws IOException{
+        int num = pdd.getNumberOfPages();
+
+        UnTaggedContext untaggedContext = new UnTaggedContext();
+        List<List<ContentPojo.contentElement>> docPages = new ArrayList<>();
+        for(int i=1;i<=num;i++){
+            List<ContentPojo.contentElement> contentElements = UnTaggedAnalyser.parsePagePureText(pdd, i);
+            System.out.println(contentElements);
+        }
+        return null;
     }
 
-    public static ContentPojo parsingUnTaggedPdfWithTableDetectionAndPicture(PDDocument pdd,String picSavePath) throws IOException {
+
+    public static ContentPojo parsingUnTaggedPdfWithTableDetection(PDDocument pdd,boolean verifyPara) throws IOException {
+        return parsingUnTaggedPdfWithTableDetectionAndPicture(pdd,null,verifyPara);
+    }
+
+    public static ContentPojo parsingUnTaggedPdfWithTableDetectionAndPicture(PDDocument pdd,String picSavePath,boolean verifyPara) throws IOException {
         int num = pdd.getNumberOfPages();
         //判断是不是ppt转成的pdf，如果这个pdf的页数大于等于2，
         //且每一页的宽度都高于高度，那么认为pdf不是word转成，直接返回空contentPojo
-        boolean isDocTransPdf = false;
-        if(num>=2){
-            for(int i=0;i<num;i++){
-                PDPage page = pdd.getPage(i);
-                PDRectangle cropBox = page.getCropBox();
-                float width = cropBox.getWidth();
-                float height = cropBox.getHeight();
-                if(width<height){
-                    //有任意一页高度较高，就认为是doc转的pdf
-                    isDocTransPdf = true;
-                    break;
-                }
-            }
-        }else{
-            isDocTransPdf = true;
-        }
+        boolean isDocTransPdf = true;
+//        if(num>=2){
+//            for(int i=0;i<num;i++){
+//                PDPage page = pdd.getPage(i);
+//                PDRectangle cropBox = page.getCropBox();
+//                float width = cropBox.getWidth();
+//                float height = cropBox.getHeight();
+//                if(width<height){
+//                    //有任意一页高度较高，就认为是doc转的pdf
+//                    isDocTransPdf = true;
+//                    break;
+//                }
+//            }
+//        }else{
+//            isDocTransPdf = true;
+//        }
 
         if(!isDocTransPdf){
             //返回一个空的ContentPojo即可
@@ -49,11 +59,11 @@ public class PdfParser {
         }
 
         UnTaggedContext untaggedContext = new UnTaggedContext();
-        //预热6页的信息
-        untaggedContext.preHeat(pdd,6);
+        //预热12页的信息
+        untaggedContext.preHeat(pdd,20);
         List<List<ContentPojo.contentElement>> docPages = new ArrayList<>();
         for(int i=1;i<=num;i++){
-            List<ContentPojo.contentElement> page = UnTaggedAnalyser.parsePage(pdd, i, untaggedContext,picSavePath);
+            List<ContentPojo.contentElement> page = UnTaggedAnalyser.parsePage(pdd, i, untaggedContext,picSavePath,verifyPara);
             docPages.add(page);
         }
 

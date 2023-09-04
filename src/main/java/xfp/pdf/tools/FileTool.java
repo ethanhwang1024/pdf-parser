@@ -124,11 +124,13 @@ public class FileTool {
             if("text".equals(element_type)){
                 //文本
                 sb.append("<p>");
-                sb.append(p.getText().replaceAll("\n","")).append("</p>");
+//                sb.append(p.getText().replaceAll("\n","")).append("</p>");
+                sb.append(p.getText()).append("</p>");
                 sb.append("<br/>");
             }else if("title".equals(element_type)){
                 sb.append("<h>");
-                sb.append(p.getText().replaceAll("\n","")).append("</h>");
+//                sb.append(p.getText().replaceAll("\n","")).append("</h>");
+                sb.append(p.getText()).append("</h>");
                 sb.append("<br/>");
             }else if(element_type.equals("table")){
                 sb.append("<table border=\"1\">");

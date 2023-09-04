@@ -12,13 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @ClassName SinglePageTest
- * @Description untaggedPdf 单页面解析
- * @Author WANGHAN756
- * @Date 2021/6/24 9:56
- * @Version 1.0
- **/
+
 public class SinglePageTest {
     static {
         System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
@@ -35,7 +29,7 @@ public class SinglePageTest {
         untaggedContext.preHeat(pdd,6);
 
         ContentPojo contentPojo = new ContentPojo();
-        List<ContentPojo.contentElement> page = UnTaggedAnalyser.parsePage(pdd, 1, untaggedContext,"D:/");
+        List<ContentPojo.contentElement> page = UnTaggedAnalyser.parsePage(pdd, 1, untaggedContext,"D:/",true);
         contentPojo.setOutList(page);
         FileTool.saveHTML("F:\\notebook\\年报\\output",contentPojo,"test");
         System.out.println(page);

@@ -67,11 +67,11 @@ public class TableLine {
 
 
     public static VerticalLine connectVLine(VerticalLine v1,VerticalLine v2){
-        return new VerticalLine(v1.getX(), v1.getYStart(), v2.getYEnd());
+        return new VerticalLine(v1.getX(), v1.getYStart(), Math.max(v1.getYEnd(),v2.getYEnd()));
     }
 
     public static HorizonLine connectHLine(HorizonLine h1,HorizonLine h2){
-        return new HorizonLine(h1.getY(),h1.getXStart(),h2.getXEnd());
+        return new HorizonLine(h1.getY(),h1.getXStart(),Math.max(h1.getXEnd(),h2.getXEnd()));
     }
 
 }
