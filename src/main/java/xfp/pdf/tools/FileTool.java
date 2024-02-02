@@ -39,7 +39,13 @@ public class FileTool {
         });
         FileWriter fwriter = null;
         try {
-            String name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            String name = null;
+            // 判断是"/"作为分割符还是"\"作为路径分割符
+            if(fileName.contains("/")){
+                name = fileName.split("/")[fileName.split("/").length - 1].split("\\.")[0];
+            }else{
+                name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            }
             // true表示不覆盖原来的内容，而是加到文件的后面。若要覆盖原来的内容，直接省略这个参数就好
             fwriter = new FileWriter(outputFileDir+"/"+name+".txt", false);
             fwriter.write(sb.toString());
@@ -63,7 +69,13 @@ public class FileTool {
         String finalText = TextTool.toJson(contentPojo);
         FileWriter fwriter = null;
         try {
-            String name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            String name = null;
+            // 判断是"/"作为分割符还是"\"作为路径分割符
+            if(fileName.contains("/")){
+                name = fileName.split("/")[fileName.split("/").length - 1].split("\\.")[0];
+            }else{
+                name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            }
             // true表示不覆盖原来的内容，而是加到文件的后面。若要覆盖原来的内容，直接省略这个参数就好
             fwriter = new FileWriter(outputFileDir+"/"+name+".json", false);
             fwriter.write(finalText);
@@ -84,7 +96,13 @@ public class FileTool {
         if(outputFileDir==null||dom==null){
             return;
         }
-        String name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+        String name = null;
+        // 判断是"/"作为分割符还是"\"作为路径分割符
+        if(fileName.contains("/")){
+            name = fileName.split("/")[fileName.split("/").length - 1].split("\\.")[0];
+        }else{
+            name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+        }
 
         //设置生成xml格式
         OutputFormat format = OutputFormat.createPrettyPrint();
@@ -159,7 +177,13 @@ public class FileTool {
         }
         FileWriter fwriter = null;
         try {
-            String name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            String name = null;
+            // 判断是"/"作为分割符还是"\"作为路径分割符
+            if(fileName.contains("/")){
+                name = fileName.split("/")[fileName.split("/").length - 1].split("\\.")[0];
+            }else{
+                name = fileName.split("\\\\")[fileName.split("\\\\").length - 1].split("\\.")[0];
+            }
             // true表示不覆盖原来的内容，而是加到文件的后面。若要覆盖原来的内容，直接省略这个参数就好
             fwriter = new FileWriter(outputFileDir+"/"+name+".html", false);
             fwriter.write(sb.toString());
