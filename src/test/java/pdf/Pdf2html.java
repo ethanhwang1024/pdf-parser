@@ -1,4 +1,4 @@
-package xfp.pdf.run;
+package pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import xfp.pdf.arrange.MarkPdf;
@@ -14,9 +14,14 @@ import java.util.concurrent.Executors;
 
 public class Pdf2html {
 
+    //所有的pdf的位置
+    public static String inputAllPdfPath = "/root/test/allpdf";
+    //所有pdf转成的html的位置
+    public static String outputAllHtmlPath = "/root/test/allhtml";
+
     public static void main(String[] args) throws IOException {
 
-        File file = new File(Path.inputAllPdfPath);
+        File file = new File(inputAllPdfPath);
         File[] files = file.listFiles();
 
         // 创建线程池获得多线程支持
@@ -38,7 +43,7 @@ public class Pdf2html {
             pdd = PDDocument.load(pdfFile);
             ContentPojo contentPojo = PdfParser.parsingUnTaggedPdfWithTableDetection(pdd, true);
             MarkPdf.markTitleSep(contentPojo);
-            FileTool.saveHTML(Path.outputAllHtmlPath, contentPojo, pdfFile.getAbsolutePath());
+            FileTool.saveHTML(outputAllHtmlPath, contentPojo, pdfFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

@@ -79,11 +79,8 @@
                     <descriptors>
                         <descriptor>src/main/resources/assembly.xml</descriptor>
                     </descriptors>
-                                       <archive>
-                                           <manifest>
-                                               <mainClass>xfp.pdf.run.Pdf2html</mainClass>
-                                           </manifest>
-                                       </archive>
+
+
                 </configuration>
                 <executions>
                     <execution>
